@@ -1,4 +1,3 @@
-![Logo of desharialize](https://raw.githubusercontent.com/Voulnet/desharialize/master/desharialize.png)
 
 # Desharialize
 Desharialize: Easy mode to Exploit CVE-2019-0604 (Sharepoint XML Deserialization Unauthenticated RCE)
