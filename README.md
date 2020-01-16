@@ -1,5 +1,3 @@
-# desharialize
-
 ![Logo of desharialize](https://raw.githubusercontent.com/Voulnet/desharialize/master/desharialize.png)
 
 # Desharialize
