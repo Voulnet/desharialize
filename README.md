@@ -65,6 +65,10 @@ For more awesome detection steps, Snort and Sigma rules, please visit: [Mansour 
 [ZDI](https://www.zerodayinitiative.com/blog/2019/3/13/cve-2019-0604-details-of-a-microsoft-sharepoint-rce-vulnerability)
 [k8gege POC](https://github.com/k8gege/CVE-2019-0604)
 
+## Disclaimer
+
+By using this tool, you absolve the tool author from any effect or repercussions resulting, directly or indirectly, from usage of this tool. This tool is provided as is, with no waranty or guarantee. This tool must only be used on legally authorized targets, and by using this tool you hereby declare that you have obtained proper legal permission from the tested targets, and that you fully absolve the tool author from any and all means and results, directly or indirectly, of utilizing this free open source tool. 
+
 ## Questions?
 
 - Raise an issue here in Github.
