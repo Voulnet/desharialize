@@ -54,6 +54,16 @@ PRs are welcome!
 - More testing against a wider range of versions and service packs for Sharepoint.
 - Integrate fully with Metasploit.
 
+## Detection
+
+Check your web server logs for request containing "71e9bce111e9429c"
+For more awesome detection steps, Snort and Sigma rules, please visit: [Mansour Alsaidie Blog](https://adraft.page/index.php/2019/09/14/cve-2019-0604-sharepoint-rce-forensics-analysis-and-detection-methods/)
+
+## References and further info
+
+[Mansour Alsaidie Blog](https://adraft.page/index.php/2019/09/14/cve-2019-0604-sharepoint-rce-forensics-analysis-and-detection-methods/)
+[ZDI](https://www.zerodayinitiative.com/blog/2019/3/13/cve-2019-0604-details-of-a-microsoft-sharepoint-rce-vulnerability)
+[k8gege POC](https://github.com/k8gege/CVE-2019-0604)
 
 ## Questions?
 
