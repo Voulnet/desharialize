@@ -43,13 +43,21 @@ Better to create a virtualenv environment for the tool. Please note that using s
 - This tool is aimed at testing Picker.aspx endpoints in particular. Not tested at other endpoints.
 - This tool runs commands through the target's command shell using Sharepoint privilges, but no way to read output directly.
 - To read output, another channel is needed: Sending result through HTTP, DNS or other options.
+- Load commands from a file: This means no need for annoying, persky escaping and encoding of values to paste stuff into the shell.
 - Burp Collaborator can help!
 
 ## Contributing
 
 PRs are welcome!
 
-### TODO:
+
+## Testing
+
+Installing and running an older version of Sharepoint to test this tool is a very annoying and cumbersome process. Installing and configuring Sharepoint was actually the only difficult thing in the process of developing this tool. To spare you sweat and blood, you may find these resources helpful, they contain a VM with Sharepoint pre-installed. You might need to fix up some licenses issues such as rearming Windows license, configuring a Developer license for MSSQL, and so on. The links are:
+[Sharepoint 2016 Ready made VM](https://gauravmahajan.net/2017/10/06/sharepoint-server-2016-virtual-machine-download/) and [Sharepoint 2013 Ready made VM](https://gauravmahajan.net/2014/08/17/sharepoint-server-2013-sp1-virtual-machine-download/)
+
+
+## TODO:
 
 - More testing against a wider range of versions and service packs for Sharepoint.
 - Integrate fully with Metasploit.
