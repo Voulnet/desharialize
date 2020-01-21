@@ -79,19 +79,19 @@ xmlns:Diag="clr-namespace:System.Diagnostics;assembly=system">
 To serialize it, .NET calls a function called Microsoft.SharePoint.BusinessData.Infrastructure.EntityInstanceIdEncoder.EncodeEntityInstanceId, which takes this string object and performs some operations resulting finally in the serialized payload which looks like "__bp123435009700370047005600d60...etc"
 By decompiling this function and debugging its code flow, we can see the following:
 
-![Logo of barq](https://raw.githubusercontent.com/Voulnet/desharialize/master/desharialize_screenshot1.png)
+![1](https://raw.githubusercontent.com/Voulnet/desharialize/master/desharialize_screenshot1.png)
 
 Here the function adds __ to the start of the string, then checks the number of objects sent to be serialized, here it's 1, so it adds 1 to 97 to convert the result into ascii (b ascii is 98 decimal), so the string becomes __b
 
-![Logo of barq](https://raw.githubusercontent.com/Voulnet/desharialize/master/desharialize_screenshot2.png)
+![2](https://raw.githubusercontent.com/Voulnet/desharialize/master/desharialize_screenshot2.png)
 
 After that, the code loops on the type of the element being serialized, it's currently of type object, so it looks up a table of types and their values from an array called typeHash.
 
-![Logo of barq](https://raw.githubusercontent.com/Voulnet/desharialize/master/desharialize_screenshot3.png)
+![2](https://raw.githubusercontent.com/Voulnet/desharialize/master/desharialize_screenshot3.png)
 
 When we decompile this array, we will find that the object type is the type #16, which has an index of 15 (starting from zero!), so the code adds the value of 16 to 97 resulting in 112, which is p in decimal, now the serialized string becomes __bp
 
-![Logo of barq](https://raw.githubusercontent.com/Voulnet/desharialize/master/desharialize_screenshot4.png)
+![3](https://raw.githubusercontent.com/Voulnet/desharialize/master/desharialize_screenshot4.png)
 
 Next, we check the type of the object being sent to be serialized, which is of type object, so we enter this if statement, where it takes our input, serialized it using the XmlSerializer class of .NET, then appends in front of it the the XamlReader Assembly Qualified name + ":" plus the XML serialized payload, so it looks like this: 
 
