@@ -2,6 +2,8 @@
 # Desharialize
 Desharialize: Easy mode to Exploit CVE-2019-0604 (Sharepoint XML Deserialization Unauthenticated RCE)
 
+![1](https://raw.githubusercontent.com/Voulnet/desharialize/master/desharializelogo.png)
+
 ## What is it?
 
 While there have been public POCs for CVE-2019-0604, I have noticed that those POCs are not clear, extensible or flexible. Some of them only have on hardcoded (and serialized/encoded) payloads, some of them require running custom .NET code before every payload, and some would run the payload on your machine first during the serialization process. I have reversed and analyzed the simple serialization/encoding algorithm used by Sharepoint, and I have created a raw template that can be used to serialize any custom payload on the fly without having to run .NET code for each payload, or run payloads that you can't read.
