@@ -79,19 +79,19 @@ xmlns:Diag="clr-namespace:System.Diagnostics;assembly=system">
 To serialize it, .NET calls a function called Microsoft.SharePoint.BusinessData.Infrastructure.EntityInstanceIdEncoder.EncodeEntityInstanceId, which takes this string object and performs some operations resulting finally in the serialized payload which looks like "__bp123435009700370047005600d60...etc"
 By decompiling this function and debugging its code flow, we can see the following:
 
-screenshot1 here
+![Logo of barq](https://raw.githubusercontent.com/Voulnet/desharialize/master/desharialize_screenshot1.png)
 
 Here the function adds __ to the start of the string, then checks the number of objects sent to be serialized, here it's 1, so it adds 1 to 97 to convert the result into ascii (b ascii is 98 decimal), so the string becomes __b
 
-screenshot2 here
+![Logo of barq](https://raw.githubusercontent.com/Voulnet/desharialize/master/desharialize_screenshot2.png)
 
 After that, the code loops on the type of the element being serialized, it's currently of type object, so it looks up a table of types and their values from an array called typeHash.
 
-screenshot3 here
+![Logo of barq](https://raw.githubusercontent.com/Voulnet/desharialize/master/desharialize_screenshot3.png)
 
 When we decompile this array, we will find that the object type is the type #16, which has an index of 15 (starting from zero!), so the code adds the value of 16 to 97 resulting in 112, which is p in decimal, now the serialized string becomes __bp
 
-screenshot4 here
+![Logo of barq](https://raw.githubusercontent.com/Voulnet/desharialize/master/desharialize_screenshot4.png)
 
 Next, we check the type of the object being sent to be serialized, which is of type object, so we enter this if statement, where it takes our input, serialized it using the XmlSerializer class of .NET, then appends in front of it the the XamlReader Assembly Qualified name + ":" plus the XML serialized payload, so it looks like this: 
 
@@ -110,6 +110,7 @@ System.Data.Services.Internal.ExpandedWrapper`2[[System.Windows.Markup.XamlReade
 
 After that, this serialized string, whose encoding is utf-16 is sent to be Hex-encoded, and then reversed, and also the length of this serialized string (after encoding, hexing and reversing) is calculated in hex (the length, that is - also encoded, hexed and reversed) and then put in front of the string so we have a string for example like "__bp82c135009700370047005600d60...etc", which actually means length of 82c1, so reversing that is 1c28 in hex, meaning 7208 in decimal. After that we have 35009700370047005600, so let's reverse that into 00530079007300740065, and decoding this from utf-16 and hex, we have 0x5379737465 which in ascii is Syste (System...etc etc)
 
+So the way this tool works is that it takes a premade serialized string, adds a known serialized-reversed-hexed string to it, takes your command input, serializes-hexes-encodes it and then puts it instead of the premade serialized placeholder, and voila! You now can put your own dynamic serialized string without having to run dotnet code or be restricted to the public payloads available online.
 
 ## TODO:
 
