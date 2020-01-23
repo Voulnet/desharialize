@@ -126,7 +126,7 @@ For more awesome detection steps, Snort and Sigma rules, please visit: [Mansour 
 
 ## References and further info
 
-[Mansour Alsaidie Blog](https://adraft.page/index.php/2019/09/14/cve-2019-0604-sharepoint-rce-forensics-analysis-and-detection-methods/)
+[Mansour Alsaeedi Blog - adraft.page](https://adraft.page/index.php/2019/09/14/cve-2019-0604-sharepoint-rce-forensics-analysis-and-detection-methods/)
 
 [ZDI](https://www.zerodayinitiative.com/blog/2019/3/13/cve-2019-0604-details-of-a-microsoft-sharepoint-rce-vulnerability)
 
