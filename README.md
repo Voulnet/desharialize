@@ -122,7 +122,7 @@ So the way this tool works is that it takes a premade serialized string, adds a 
 ## Detection
 
 Check your web server logs for request containing "71e9bce111e9429c"
-For more awesome detection steps, Snort and Sigma rules, please visit: [Mansour Alsaidie Blog](https://adraft.page/index.php/2019/09/14/cve-2019-0604-sharepoint-rce-forensics-analysis-and-detection-methods/)
+For more awesome detection steps, Snort and Sigma rules, please visit: [Mansour Alsaeedi Blog - adraft.page](https://adraft.page/index.php/2019/09/14/cve-2019-0604-sharepoint-rce-forensics-analysis-and-detection-methods/)
 
 ## References and further info
 
