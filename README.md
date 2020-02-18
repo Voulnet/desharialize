@@ -43,9 +43,9 @@ Better to create a virtualenv environment for the tool. Please note that using s
 - No need to play musical chairs with dynamically changing VIEWSTATE and EVENTVALIDATION values, Desharialize scrapes them from the target automatically.
 - Make pentesting Sharepoint fun again.
 - This tool is aimed at testing Picker.aspx endpoints in particular. Not tested at other endpoints.
-- This tool runs commands through the target's command shell using Sharepoint privilges, but no way to read output directly.
+- This tool runs commands through the target's command shell using Sharepoint privileges, but no way to read output directly.
 - To read output, another channel is needed: Sending result through HTTP, DNS or other options.
-- Load commands from a file: This means no need for annoying, persky escaping and encoding of values to paste stuff into the shell.
+- Load commands from a file: This means no need for annoying, pesky escaping and encoding of values to paste stuff into the shell.
 - Burp Collaborator can help!
 
 ## Contributing
@@ -60,7 +60,7 @@ Installing and running an older version of Sharepoint to test this tool is a ver
 
 ## Brief Explanation of the serialization process
 
-In my analysis of this vulnerability, I noticed that the vulnerability has been explaned in depth by the authors of the awesome links you will find in the References section below. I will attempt to explain the serialization process, because this is what allowed me to create a dynamic payload you can change on the fly without calling .NET code everytime.
+In my analysis of this vulnerability, I noticed that the vulnerability has been explained in depth by the authors of the awesome links you will find in the References section below. I will attempt to explain the serialization process, because this is what allowed me to create a dynamic payload you can change on the fly without calling .NET code every time.
 
 The serialized string is a XamlReader ExpandedWrapper which contains our payload in its XML format, An example taken from [this POC](https://github.com/linhlhq/CVE-2019-0604)  is:
 ```XML
@@ -110,7 +110,7 @@ System.Data.Services.Internal.ExpandedWrapper`2[[System.Windows.Markup.XamlReade
 </ExpandedWrapperOfXamlReaderObjectDataProvider>
 ```
 
-After that, this serialized string, whose encoding is utf-16 is sent to be Hex-encoded, and then reversed, and also the length of this serialized string (after encoding, hexing and reversing) is calculated in hex (the length, that is - also encoded, hexed and reversed) and then put in front of the string so we have a string for example like "__bp82c135009700370047005600d60...etc", which actually means length of 82c1, so reversing that is 1c28 in hex, meaning 7208 in decimal. After that we have 35009700370047005600, so let's reverse that into 00530079007300740065, and decoding this from utf-16 and hex, we have 0x5379737465 which in ascii is Syste (System...etc etc)
+After that, this serialized string, whose encoding is utf-16 is sent to be Hex-encoded, and then reversed, and also the length of this serialized string (after encoding, hexing and reversing) is calculated in hex (the length, that is - also encoded, hexed and reversed) and then put in front of the string so we have a string for example like "__bp82c135009700370047005600d60...etc", which actually means length of 82c1, so reversing that is 1c28 in hex, meaning 7208 in decimal. After that we have 35009700370047005600, so let's reverse that into 00530079007300740065, and decoding this from utf-16 and hex, we have 0x5379737465 which in ascii is System (System...etc etc)
 
 So the way this tool works is that it takes a premade serialized string, adds a known serialized-reversed-hexed string to it, takes your command input, serializes-hexes-encodes it and then puts it instead of the premade serialized placeholder, and voila! You now can put your own dynamic serialized string without having to run dotnet code or be restricted to the public payloads available online.
 
@@ -137,7 +137,7 @@ For more awesome detection steps, Snort and Sigma rules, please visit: [Mansour 
 
 ## Disclaimer
 
-By using this tool, you absolve the tool author from any effect or repercussions resulting, directly or indirectly, from usage of this tool. This tool is provided as is, with no waranty or guarantee. This tool must only be used on legally authorized targets, and by using this tool you hereby declare that you have obtained proper legal permission from the tested targets, and that you fully absolve the tool author from any and all means and results, directly or indirectly, of utilizing this free open source tool. 
+By using this tool, you absolve the tool author from any effect or repercussions resulting, directly or indirectly, from usage of this tool. This tool is provided as is, with no warranty or guarantee. This tool must only be used on legally authorized targets, and by using this tool you hereby declare that you have obtained proper legal permission from the tested targets, and that you fully absolve the tool author from any and all means and results, directly or indirectly, of utilizing this free open source tool. 
 
 ## Questions?
 
