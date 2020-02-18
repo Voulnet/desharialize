@@ -134,6 +134,8 @@ For more awesome detection steps, Snort and Sigma rules, please visit: [Mansour 
 
 [.NET POC to create serialized payload](https://github.com/linhlhq/CVE-2019-0604) 
 
+[YSoSerial.net dotnet deserialization payload generator] (https://github.com/pwntester/ysoserial.net) 
+
 
 ## Disclaimer
 
