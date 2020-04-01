@@ -91,7 +91,7 @@ After that, the code loops on the type of the element being serialized, it's cur
 
 ![2](https://raw.githubusercontent.com/Voulnet/desharialize/master/desharialize_screenshot3.png)
 
-When we decompile this array, we will find that the object type is the type #16, which has an index of 15 (starting from zero!), so the code adds the value of 16 to 97 resulting in 112, which is p in decimal, now the serialized string becomes __bp
+When we decompile this array, we will find that the object type is the type #16, which has an index of 15 (starting from zero!), so the code adds the value of 15 to 97 resulting in 112, which is p in decimal, now the serialized string becomes __bp
 
 ![3](https://raw.githubusercontent.com/Voulnet/desharialize/master/desharialize_screenshot4.png)
 
